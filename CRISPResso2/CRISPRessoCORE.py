@@ -90,19 +90,62 @@ def check_program(binary_name,download_url=None):
             error('You can download it here:%s' % download_url)
         sys.exit(1)
 
+def get_avg_line_size_in_gz(filename):
+    count = 0
+    size = 0;
+    for line in gzip.open(filename).readlines():
+        if((count % 4) == 1):
+            size += len(line) - 1
+        count += 1
+    return size / (count / 4)
 
+def get_avg_line_size_in_file(filename):
+    count = 0
+    size = 0;
+    for line in open(filename).readlines():
+        if((count % 4) == 1):
+            size += len(line) - 1
+        count += 1
+    return size / (count / 4)
 
 def get_avg_read_length_fastq(fastq_filename):
-     cmd=('z' if fastq_filename.endswith('.gz') else '' ) +('cat < \"%s\"' % fastq_filename)+\
-                  r''' | awk 'BN {n=0;s=0;} NR%4 == 2 {s+=length($0);n++;} END { printf("%d\n",s/n)}' '''
-     p = sb.Popen(cmd, shell=True,stdout=sb.PIPE)
-     return int(p.communicate()[0].strip())
+    avg = 0
+    if fastq_filename.endswith('.gz'):
+        avg = get_avg_line_size_in_gz(fastq_filename)
+    else:
+        avg = get_avg_line_size_in_file(fastq_filename)
+    return avg
+
+def get_n_lines_in_gz(filename):
+    count = 0
+    thefile = gzip.open(filename, 'rb')
+    while 1:
+        buffer = thefile.read(8192*1024)
+        if not buffer: break
+        count += buffer.count('\n')
+    thefile.close(  )
+    return count
+
+def get_n_lines_in_file(filename):
+    count = 0
+    thefile = open(filename, 'rb')
+    while 1:
+        buffer = thefile.read(8192*1024)
+        if not buffer: break
+        count += buffer.count('\n')
+    thefile.close(  )
+    return count
 
 def get_n_reads_fastq(fastq_filename):
-    p = sb.Popen(('z' if fastq_filename.endswith('.gz') else '' ) +"cat < \"%s\" | wc -l" % fastq_filename , shell=True,stdout=sb.PIPE)
-    return int(float(p.communicate()[0])/4.0)
+    count = 0
+    if fastq_filename.endswith('.gz'):
+        count = get_n_lines_in_gz(fastq_filename)
+    else:
+        count = get_n_lines_in_file(fastq_filename)
+    return int(float(count)/4.0)
 
 def get_n_reads_bam(bam_filename,bam_chr_loc=""):
+    print("samtools view -c " + bam_filename + " " + bam_chr_loc)
     p = sb.Popen("samtools view -c " + bam_filename + " " + bam_chr_loc, shell=True,stdout=sb.PIPE)
     return int(float(p.communicate()[0]))
 
@@ -824,6 +867,7 @@ def main():
             crispresso_cmd_to_write = ' '.join(cmd_copy) #clean command doesn't show the absolute path to the executable or other files
         crispresso2_info['command_used'] = crispresso_cmd_to_write
 
+        fileHandler = 0
         try:
             os.makedirs(OUTPUT_DIRECTORY)
             info('Creating Folder %s' % OUTPUT_DIRECTORY)
@@ -832,8 +876,8 @@ def main():
             warn('Folder %s already exists.' % OUTPUT_DIRECTORY)
 
         finally:
-            logging.getLogger().addHandler(logging.FileHandler(log_filename))
-
+            fileHandler = logging.FileHandler(log_filename)
+            logging.getLogger().addHandler(fileHandler)
             with open(log_filename,'w+') as outfile:
                 outfile.write('CRISPResso version %s\n[Command used]:\n%s\n\n[Execution log]:\n' %(CRISPRessoShared.__version__,crispresso_cmd_to_write))
 
@@ -1839,8 +1883,13 @@ def main():
                    args.trimmomatic_options_string.replace('NexteraPE-PE.fa','TruSeq3-SE.fa'),
                    log_filename)
                 #print cmd
-                TRIMMOMATIC_STATUS=sb.call(cmd,shell=True)
-
+                try:
+                    logging.getLogger().removeHandler(fileHandler)
+                    fileHandler.close()
+                    TRIMMOMATIC_STATUS=sb.call(cmd,shell=True)
+                finally:
+                    fileHandler = logging.FileHandler(log_filename)
+                    logging.getLogger().addHandler(fileHandler)
                 if TRIMMOMATIC_STATUS:
                         raise CRISPRessoShared.TrimmomaticException('TRIMMOMATIC failed to run, please check the log file.')
                 crispresso2_info['trimmomatic_command'] = cmd
@@ -1867,7 +1916,13 @@ def main():
                         output_forward_unpaired_filename,output_reverse_paired_filename,
                         output_reverse_unpaired_filename,args.trimmomatic_options_string,log_filename)
                 #print cmd
-                TRIMMOMATIC_STATUS=sb.call(cmd,shell=True)
+                try:
+                    logging.getLogger().removeHandler(fileHandler)
+                    fileHandler.close()
+                    TRIMMOMATIC_STATUS=sb.call(cmd,shell=True)
+                finally:
+                    fileHandler = logging.FileHandler(log_filename)
+                    logging.getLogger().addHandler(fileHandler)
                 if TRIMMOMATIC_STATUS:
                     raise CRISPRessoShared.TrimmomaticException('TRIMMOMATIC failed to run, please check the log file.')
                 crispresso2_info['trimmomatic_command'] = cmd
@@ -1928,7 +1983,13 @@ def main():
 
             info('Running FLASH command: ' + cmd)
             crispresso2_info['flash_command'] = cmd
-            FLASH_STATUS=sb.call(cmd,shell=True)
+            try:
+                logging.getLogger().removeHandler(fileHandler)
+                fileHandler.close()
+                FLASH_STATUS=sb.call(cmd, shell=True)
+            finally:
+                fileHandler = logging.FileHandler(log_filename)
+                logging.getLogger().addHandler(fileHandler)
             if FLASH_STATUS:
                 raise CRISPRessoShared.FlashException('Flash failed to run, please check the log file.')
 
