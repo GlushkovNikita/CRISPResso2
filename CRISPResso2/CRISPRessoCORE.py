@@ -8,6 +8,8 @@ Software pipeline for the analysis of genome editing outcomes from deep sequenci
 '''
 
 import sys
+import platform
+
 running_python3 = False
 if sys.version_info > (3, 0):
     running_python3 = True
@@ -67,19 +69,22 @@ def check_library(library_name):
 
 def which(program):
     import os
+    if platform.system() == 'Windows' and program[:4] != ".exe":
+        program = program + ".exe"
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
+    #fpath, fname = os.path.split(program)
+    #if fpath:
+    if is_exe(program):
+        return program
+    #else:
+    print(os.environ["PATH"])
+    for path in os.environ["PATH"].split(os.pathsep):
+        path = path.strip('"')
+        exe_file = os.path.join(path, program)
+        if is_exe(exe_file):
+            return exe_file
 
     return None
 
