@@ -17,9 +17,10 @@ cdef extern from "stdlib.h":
 
 cdef extern from "Python.h":
     ctypedef void PyObject
-    PyObject *PyString_FromStringAndSize(char *, size_t)
-    int _PyString_Resize(PyObject **, size_t)
-    char * PyString_AS_STRING(PyObject *)
+    PyObject *PyUnicode_FromStringAndSize(char *, size_t)
+    #int _PyBytes_Resize(PyObject **, size_t)
+    PyObject* PyUnicode_Substring(PyObject *str, Py_ssize_t start, Py_ssize_t end)
+    char * PyBytes_AS_STRING(PyObject *)
 
 ctypedef np.int_t DTYPE_INT
 ctypedef np.uint_t DTYPE_UINT
@@ -276,12 +277,12 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
 
     seqlen = max_i + max_j
-    ai = PyString_FromStringAndSize(NULL, seqlen)
-    aj = PyString_FromStringAndSize(NULL, seqlen)
+    ai = PyUnicode_FromStringAndSize(NULL, seqlen)
+    aj = PyUnicode_FromStringAndSize(NULL, seqlen)
 
     # had to use this and PyObject instead of assigning directly...
-    align_j = PyString_AS_STRING(aj)
-    align_i = PyString_AS_STRING(ai)
+    align_j = PyBytes_AS_STRING(aj)
+    align_i = PyBytes_AS_STRING(ai)
 #
 #    print('mScore')
 #    for ii in range(mScore.shape[0]):
@@ -367,8 +368,10 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
         align_counter += 1
 
-    _PyString_Resize(&aj, align_counter)
-    _PyString_Resize(&ai, align_counter)
+    #_PyBytes_Resize(&aj, align_counter)
+    #_PyBytes_Resize(&ai, align_counter)
+    aj = PyUnicode_Substring(aj, 0, align_counter)
+    ai = PyUnicode_Substring(ai, 0, align_counter)
 
 #    print(str(matchCount) + " aln: " + str(align_counter))
     final_score = 100*matchCount/float(align_counter)

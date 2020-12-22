@@ -46,7 +46,8 @@ present = datetime.now()
 import logging
 #from test._mock_backport import inplace
 logging.basicConfig(level=logging.INFO,
-                     format='%(levelname)-5s @ %(asctime)s:\n\t %(message)s \n',
+                     #format='%(levelname)-5s @ %(asctime)s:\n\t %(message)s \n',
+                     format='%(message)s \n',
                      datefmt='%a, %d %b %Y %H:%M:%S',
                      stream=sys.stderr,
                      filemode="w"
@@ -79,7 +80,6 @@ def which(program):
     if is_exe(program):
         return program
     #else:
-    print(os.environ["PATH"])
     for path in os.environ["PATH"].split(os.pathsep):
         path = path.strip('"')
         exe_file = os.path.join(path, program)
@@ -779,9 +779,9 @@ def main():
         if 'args' in vars() and 'debug' in args:
             debug_flag = args.debug
 
-        if debug_flag:
-            traceback.print_exc(file=sys.stdout)
-            error(traceback.format_exc())
+        #if debug_flag:
+        traceback.print_exc(file=sys.stdout)
+        error(traceback.format_exc())
 
     try:
 
@@ -894,7 +894,7 @@ def main():
                 if previous_run_data['version'] == CRISPRessoShared.__version__:
                     args_are_same = True
                     for arg in vars(args):
-                        if arg is "no_rerun":
+                        if arg == "no_rerun":
                             continue
                         if arg not in vars(previous_run_data['args']):
                             info('Comparing current run to previous run: old run had argument ' + str(arg) + ' \nRerunning.')
@@ -1666,10 +1666,12 @@ def main():
                 if not needs_cut_points and not needs_sgRNA_intervals and not needs_exon_positions and args.quantification_window_coordinates is None:
                     continue
 
-                fws1,fws2,fwscore=CRISPResso2Align.global_align(refs[ref_name]['sequence'], refs[clone_ref_name]['sequence'],matrix=aln_matrix,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,gap_incentive=refs[clone_ref_name]['gap_incentive'])
+                fws1, fws2, fwscore=CRISPResso2Align.global_align(
+                    refs[ref_name]['sequence'].encode(),
+                    refs[clone_ref_name]['sequence'].encode(),
+                    matrix=aln_matrix,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,gap_incentive=refs[clone_ref_name]['gap_incentive'])
                 if fwscore < 60:
                     continue
-
                 if (needs_sgRNA_intervals or needs_cut_points) and clone_has_cut_points and args.debug:
                     info("Reference '%s' has NO cut points or sgRNA intervals idxs defined. Inferring from '%s'."%(ref_name,clone_ref_name))
                 if needs_exon_positions and clone_has_exons and args.debug:

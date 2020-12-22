@@ -981,14 +981,14 @@ def get_crispresso_header(description,header_str):
         max_header_width = max([len(x) for x in header_lines])
 
 
-        pad_space = (term_width - (max_logo_width*2) - max_header_width)/4 - 1
+        pad_space = int((term_width - (max_logo_width*2) - max_header_width)/4) - 1
         pad_string = " " * pad_space
 
         for i in range(len(logo_lines))[::-1]:
             output_line = (logo_lines[i].ljust(max_logo_width) + pad_string + header_lines[i].ljust(max_header_width) + pad_string + logo_lines[i].ljust(max_logo_width)).center(term_width) + "\n" + output_line
 
     else:
-        pad_space = (term_width - max_logo_width)/2 - 1
+        pad_space = int((term_width - max_logo_width)/2) - 1
         pad_string = " " * pad_space
         for i in range(len(logo_lines))[::-1]:
             output_line = (pad_string + logo_lines[i].ljust(max_logo_width) + pad_string).center(term_width) + "\n" + output_line

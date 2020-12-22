@@ -32,9 +32,9 @@ import sys
 import re
 
 def main():
-    if float(sys.version[:3])<2.7 or float(sys.version[:3])>=2.8:
-        sys.stderr.write("CRITICAL: Python version must be 2.7!\n")
-        sys.exit(1)
+    #if float(sys.version[:3])<2.7 or float(sys.version[:3])>=2.8:
+    #    sys.stderr.write("CRITICAL: Python version must be 2.7!\n")
+    #    sys.exit(1)
 
     version = re.search(
     	'^__version__\s*=\s*"(.*)"',
@@ -87,17 +87,17 @@ def main():
               'Programming Language :: Python :: 2 :: Only',
               'Programming Language :: Cython',
               ],
-          install_requires=[
-              'pandas>=0.15,<=0.24',
-              'matplotlib>=1.3.1,<=2.2.3',
-              'argparse>=1.3,<=1.4',
-    	      'seaborn>0.7.1,<0.10',
-              'jinja2==2.10',
-    	      'scipy==1.1.0',
-              'numpy>=1.9,<=1.16.6',
-              'kiwisolver<1.2',
-              'pyparsing<3',
-              ],
+          #install_requires=[
+          #    'pandas>=0.15,<=0.24',
+          #    'matplotlib>=1.3.1,<=2.2.3',
+          #    'argparse>=1.3,<=1.4',
+    	  #    'seaborn>0.7.1,<0.10',
+          #    'jinja2==2.10',
+    	  #    'scipy==1.1.0',
+          #    'numpy>=1.9,<=1.16.6',
+          #    'kiwisolver<1.2',
+          #    'pyparsing<3',
+          #    ],
           cmdclass = command_classes,
           ext_modules = ext_modules
           )

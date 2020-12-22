@@ -398,7 +398,7 @@ def main():
                 if previous_run_data['version'] == CRISPRessoShared.__version__:
                     args_are_same = True
                     for arg in vars(args):
-                        if arg is "no_rerun" or arg is "debug" or arg is "n_processes":
+                        if arg == "no_rerun" or arg == "debug" or arg == "n_processes":
                             continue
                         if arg not in vars(previous_run_data['args']):
                             info('Comparing current run to previous run: old run had argument ' + str(arg) + ' \nRerunning.')
@@ -1291,36 +1291,37 @@ def main():
         if RUNNING_MODE != 'ONLY_GENOME':
             #N_READS_INPUT=get_n_reads_fastq(args.fastq_r1)
             #N_READS_AFTER_PREPROCESSING=get_n_reads_fastq(processed_output_filename)
-    		tot_reads_aligned = df_summary_quantification['Reads_aligned'].fillna(0).sum()
-    		tot_reads = df_summary_quantification['Reads_total'].sum()
 
-    		if RUNNING_MODE=='AMPLICONS_AND_GENOME':
-    			this_bam_filename = bam_filename_genome
-    		if RUNNING_MODE=='ONLY_AMPLICONS':
-    			this_bam_filename = bam_filename_amplicons
-    		#if less than 1/2 of reads aligned, find most common unaligned reads and advise the user
-    		if N_READS_INPUT > 0 and tot_reads/float(N_READS_INPUT) < 0.5:
-    			warn('Less than half (%d/%d) of reads aligned to amplicons. Finding most frequent unaligned reads.'%(tot_reads,N_READS_INPUT))
+            tot_reads_aligned = df_summary_quantification['Reads_aligned'].fillna(0).sum()
+            tot_reads = df_summary_quantification['Reads_total'].sum()
+
+            if RUNNING_MODE=='AMPLICONS_AND_GENOME':
+                this_bam_filename = bam_filename_genome
+            if RUNNING_MODE=='ONLY_AMPLICONS':
+                this_bam_filename = bam_filename_amplicons
+            #if less than 1/2 of reads aligned, find most common unaligned reads and advise the user
+            if N_READS_INPUT > 0 and tot_reads/float(N_READS_INPUT) < 0.5:
+                warn('Less than half (%d/%d) of reads aligned to amplicons. Finding most frequent unaligned reads.'%(tot_reads,N_READS_INPUT))
     			###
     			###this results in the unpretty messages being printed:
     			### sort: write failed: standard output: Broken pipe
     			### sort: write error
     			###
     			#cmd = "samtools view -f 4 %s | awk '{print $10}' | sort | uniq -c | sort -nr | head -n 10"%this_bam_filename
-    			import signal
-    			def default_sigpipe():
-    				    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+                import signal
+                def default_sigpipe():
+                    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
-    			cmd = "samtools view -f 4 %s | head -n 10000 | awk '{print $10}' | sort | uniq -c | sort -nr | head -n 10 | awk '{print $2}'"%this_bam_filename
+                cmd = "samtools view -f 4 %s | head -n 10000 | awk '{print $10}' | sort | uniq -c | sort -nr | head -n 10 | awk '{print $2}'"%this_bam_filename
 #    			print("command is: "+cmd)
 #    		    p = sb.Popen(cmd, shell=True,stdout=sb.PIPE)
-		    	p = sb.Popen(cmd, shell=True,stdout=sb.PIPE,preexec_fn=default_sigpipe)
-    			top_unaligned = p.communicate()[0]
-    			top_unaligned_filename=_jp('CRISPRessoPooled_TOP_UNALIGNED.txt')
+                p = sb.Popen(cmd, shell=True,stdout=sb.PIPE,preexec_fn=default_sigpipe)
+                top_unaligned = p.communicate()[0]
+                top_unaligned_filename=_jp('CRISPRessoPooled_TOP_UNALIGNED.txt')
 
-    			with open(top_unaligned_filename,'w') as outfile:
-    				outfile.write(top_unaligned)
-    			warn('Perhaps one or more of the given amplicon sequences were incomplete or incorrect. Below is a list of the most frequent unaligned reads (in the first 10000 unaligned reads). Check this list to see if an amplicon is among these reads.\n%s'%top_unaligned)
+                with open(top_unaligned_filename,'w') as outfile:
+                    outfile.write(top_unaligned)
+                warn('Perhaps one or more of the given amplicon sequences were incomplete or incorrect. Below is a list of the most frequent unaligned reads (in the first 10000 unaligned reads). Check this list to see if an amplicon is among these reads.\n%s'%top_unaligned)
 
 
         #cleaning up
@@ -1432,7 +1433,7 @@ def main():
             cp.dump(crispresso2_info, info_file )
 
         info('All Done!')
-        print CRISPRessoShared.get_crispresso_footer()
+        print(CRISPRessoShared.get_crispresso_footer())
         sys.exit(0)
 
     except Exception as e:
