@@ -18,9 +18,12 @@ cdef extern from "stdlib.h":
 cdef extern from "Python.h":
     ctypedef void PyObject
     PyObject *PyUnicode_FromStringAndSize(char *, size_t)
+    PyObject* PyUnicode_New(Py_ssize_t size, Py_UCS4 maxchar)
     #int _PyBytes_Resize(PyObject **, size_t)
     PyObject* PyUnicode_Substring(PyObject *str, Py_ssize_t start, Py_ssize_t end)
     char * PyBytes_AS_STRING(PyObject *)
+    int PyUnicode_WriteChar(PyObject *unicode, Py_ssize_t index, Py_UCS4 character)
+    Py_UCS4 PyUnicode_ReadChar(PyObject *unicode, Py_ssize_t index)
 
 ctypedef np.int_t DTYPE_INT
 ctypedef np.uint_t DTYPE_UINT
@@ -277,12 +280,12 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
 
     seqlen = max_i + max_j
-    ai = PyUnicode_FromStringAndSize(NULL, seqlen)
-    aj = PyUnicode_FromStringAndSize(NULL, seqlen)
+    ai = PyUnicode_New(seqlen, 122)
+    aj = PyUnicode_New(seqlen, 122)
 
     # had to use this and PyObject instead of assigning directly...
-    align_j = PyBytes_AS_STRING(aj)
-    align_i = PyBytes_AS_STRING(ai)
+    #align_j = PyBytes_AS_STRING(aj)
+    #align_i = PyBytes_AS_STRING(ai)
 #
 #    print('mScore')
 #    for ii in range(mScore.shape[0]):
@@ -338,8 +341,8 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
             currMatrix = mPointer[i,j]
             i -= 1
             j -= 1
-            align_j[align_counter] = cj
-            align_i[align_counter] = ci
+            PyUnicode_WriteChar(aj, align_counter, cj)
+            PyUnicode_WriteChar(ai, align_counter, cj)
             if cj == ci:
                  matchCount += 1
 
@@ -350,14 +353,14 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
           elif currMatrix == JARRAY:
             currMatrix = jPointer[i,j]
             i -= 1
-            align_j[align_counter] = c"-"
-            align_i[align_counter] = ci
+            PyUnicode_WriteChar(aj, align_counter, c"-")
+            PyUnicode_WriteChar(ai, align_counter, ci)
             ci = seqi[i-1]
           elif currMatrix == IARRAY:
             currMatrix = iPointer[i,j]
             j -= 1
-            align_j[align_counter] = cj
-            align_i[align_counter] = c"-"
+            PyUnicode_WriteChar(aj, align_counter, cj)
+            PyUnicode_WriteChar(ai, align_counter, c"-")
             cj = seqj[j-1]
           else:
             print('i: ' + str(i) + ' j: ' + str(j))
@@ -367,9 +370,6 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 #          print('at end, currMatrix is ' + str(currMatrix))
 
         align_counter += 1
-
-    #_PyBytes_Resize(&aj, align_counter)
-    #_PyBytes_Resize(&ai, align_counter)
     aj = PyUnicode_Substring(aj, 0, align_counter)
     ai = PyUnicode_Substring(ai, 0, align_counter)
 

@@ -259,18 +259,34 @@ def propagate_crispresso_options(cmd,options,params):
 #######
 # Sequence functions
 #######
-nt_complement=dict({'A':'T','C':'G','G':'C','T':'A','N':'N','_':'_','-':'-'})
+nt_complement=dict({
+    ord('a'):ord('T'),
+    ord('c'):ord('G'),
+    ord('g'):ord('C'),
+    ord('t'):ord('A'),
+    ord('n'):ord('N'),
+    ord('A'):ord('T'),
+    ord('C'):ord('G'),
+    ord('G'):ord('C'),
+    ord('T'):ord('A'),
+    ord('N'):ord('N'),
+    ord('_'):ord('_'),
+    ord('-'):ord('-')})
+
 def reverse_complement(seq):
-        return "".join([nt_complement[c] for c in seq.upper()[-1::-1]])
+    assert isinstance(seq, (bytes, bytearray))
+    return bytes([nt_complement[c] for c in seq[-1::-1]])
 
 def reverse(seq):
-    return "".join(c for c in seq.upper()[-1::-1])
+    assert isinstance(seq, (bytes, bytearray))
+    return bytes([c for c in seq.upper()[-1::-1]])
 
 def find_wrong_nt(sequence):
+    assert isinstance(sequence, str)
     return list(set(sequence.upper()).difference(set(['A','T','C','G','N'])))
 
 def capitalize_sequence(x):
-    return str(x).upper() if not pd.isnull(x) else x
+    return x.upper() if not pd.isnull(x) else x
 
 def slugify(value): #adapted from the Django project
 

@@ -3,6 +3,9 @@ import numpy as np
 cimport numpy as np
 import re
 
+cdef extern from "Python.h":
+    ctypedef void PyObject
+    PyObject *PyUnicode_FromString(const char *u)
 
 re_find_indels=re.compile("(-*-)")
 
@@ -82,9 +85,9 @@ def find_indels_substitutions(_read_seq_al,_ref_seq_al,_include_indx):
     insertion_coordinates = []
     insertion_sizes=[]
 
-
+    read_seq_al_str = PyUnicode_FromString(read_seq_al)
     include_indx_set = set(_include_indx)
-    for p in re_find_indels.finditer(read_seq_al):
+    for p in re_find_indels.finditer(<object>read_seq_al_str):
         st,en=p.span()
         ref_st = 0
         if st-1 > 0:
@@ -101,7 +104,8 @@ def find_indels_substitutions(_read_seq_al,_ref_seq_al,_include_indx):
 
     deletion_n = np.sum(deletion_sizes)
 
-    for p in re_find_indels.finditer(ref_seq_al):
+    ref_seq_al_str = PyUnicode_FromString(ref_seq_al)
+    for p in re_find_indels.finditer(<object>ref_seq_al_str):
         st,en=p.span()
         #sometimes deletions run off the end of the reference
         if en > idx: # if insertion happened after ref
