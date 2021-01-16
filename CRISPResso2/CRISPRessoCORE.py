@@ -251,14 +251,13 @@ def get_new_variant_object(args, fastq_seq, refs, ref_names, aln_matrix, pe_scaf
         found_forward_count = 0
         found_reverse_count = 0
         while seed_i < args.aln_seed_count and seed_i < len(refs[ref_name]['fw_seeds']):
-            if refs[ref_name]['fw_seeds'][seed_i].encode("utf-8") in fastq_seq: #is forward
+            if refs[ref_name]['fw_seeds'][seed_i] in fastq_seq: #is forward
                 found_forward_count += 1
-            if refs[ref_name]['rc_seeds'][seed_i].encode("utf-8") in fastq_seq: #is rc
+            if refs[ref_name]['rc_seeds'][seed_i] in fastq_seq: #is rc
                 found_reverse_count += 1
             seed_i += 1
         if found_forward_count > args.aln_seed_min and found_reverse_count == 0:
-            fws1,fws2,fwscore=CRISPResso2Align.global_align(fastq_seq, refs[ref_name]['sequence'].encode("utf-8"),
-                                                            matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
+            fws1,fws2,fwscore=CRISPResso2Align.global_align(fastq_seq, refs[ref_name]['sequence'],matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
             s1 = fws1
             s2 = fws2
             score = fwscore
@@ -269,10 +268,8 @@ def get_new_variant_object(args, fastq_seq, refs, ref_names, aln_matrix, pe_scaf
             s2 = rvs2
             score = rvscore
         else:
-            fws1,fws2,fwscore=CRISPResso2Align.global_align(fastq_seq, refs[ref_name]['sequence'].encode("utf-8"),
-                                                            matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
-            rvs1,rvs2,rvscore=CRISPResso2Align.global_align(CRISPRessoShared.reverse_complement(fastq_seq), refs[ref_name]['sequence'].encode("utf-8"),
-                                                            matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
+            fws1,fws2,fwscore=CRISPResso2Align.global_align(fastq_seq, refs[ref_name]['sequence'],matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
+            rvs1,rvs2,rvscore=CRISPResso2Align.global_align(CRISPRessoShared.reverse_complement(fastq_seq), refs[ref_name]['sequence'],matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
             s1 = fws1
             s2 = fws2
             score = fwscore
@@ -307,7 +304,7 @@ def get_new_variant_object(args, fastq_seq, refs, ref_names, aln_matrix, pe_scaf
 
         for idx in range(len(best_match_names)):
             best_match_name = best_match_names[idx]
-            payload=CRISPRessoCOREResources.find_indels_substitutions(best_match_s1s[idx].encode("utf-8"),best_match_s2s[idx].encode("utf-8"),refs[best_match_name]['include_idxs'])
+            payload=CRISPRessoCOREResources.find_indels_substitutions(best_match_s1s[idx],best_match_s2s[idx],refs[best_match_name]['include_idxs'])
             payload['ref_name'] = best_match_name
             payload['aln_scores'] = aln_scores
 
@@ -1091,8 +1088,7 @@ def main():
             inds_r : if there's a gap in to_sequence, these values are filled with the right value (after the gap)
             """
             this_gap_incentive = np.zeros(len(from_sequence)+1,dtype=np.int)
-            fws1,fws2,fwscore=CRISPResso2Align.global_align(to_sequence.encode("utf-8"),from_sequence.encode("utf-8"),
-                                                            matrix=aln_matrix,gap_open=gap_open_penalty,gap_extend=gap_extend_penalty,gap_incentive=this_gap_incentive)
+            fws1,fws2,fwscore=CRISPResso2Align.global_align(to_sequence,from_sequence,matrix=aln_matrix,gap_open=gap_open_penalty,gap_extend=gap_extend_penalty,gap_incentive=this_gap_incentive)
             s1inds_l = []
             s1inds_r = []
             s1ix_l = -1
@@ -1144,8 +1140,7 @@ def main():
             s2: aligned s2 (within_amp_seq)
             """
             ref_incentive = np.zeros(len(within_amp_seq)+1,dtype=np.int)
-            s1,s2,fw_score=CRISPResso2Align.global_align(guide_seq.encode("utf-8"),within_amp_seq.encode("utf-8"),
-                                                         matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=0,)
+            s1,s2,fw_score=CRISPResso2Align.global_align(guide_seq,within_amp_seq,matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=0,)
             range_start_dashes = 0
             m = re.search(r'^-+',s1)
             if (m):
@@ -1208,10 +1203,8 @@ def main():
                 raise CRISPRessoShared.BadParameterException('The prime editing pegRNA spacer sequence (--prime_editing_pegRNA_spacer_seq) is required for prime editing analysis.')
             pegRNA_spacer_seq = args.prime_editing_pegRNA_spacer_seq.upper().replace('U','T')
             ref_incentive = np.zeros(len(prime_editing_extension_seq_dna)+1,dtype=np.int)
-            f1,f2,fw_score=CRISPResso2Align.global_align(pegRNA_spacer_seq,prime_editing_extension_seq_dna,
-                                                         matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=0,)
-            r1,r2,rv_score=CRISPResso2Align.global_align(pegRNA_spacer_seq,extension_seq_dna_top_strand,
-                                                         matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=0,)
+            f1,f2,fw_score=CRISPResso2Align.global_align(pegRNA_spacer_seq,prime_editing_extension_seq_dna,matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=0,)
+            r1,r2,rv_score=CRISPResso2Align.global_align(pegRNA_spacer_seq,extension_seq_dna_top_strand,matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=0,)
             if rv_score > fw_score:
                 warn("The pegRNA spacer aligns to the pegRNA extension sequence in 3'->5' direction. The reverse complement of the extension sequence will be used.")
                 prime_editing_extension_seq_dna = extension_seq_dna_top_strand
@@ -1440,16 +1433,14 @@ def main():
                     #for all amps in forward and reverse complement amps:
                     for amp_seq in [this_seq,CRISPRessoShared.reverse_complement(this_seq)]:
                         ref_incentive = np.zeros(len(amp_seq)+1,dtype=np.int)
-                        s1,s2,score=CRISPResso2Align.global_align(guide.encode("utf-8"),amp_seq,
-                                                                  matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
+                        s1,s2,score=CRISPResso2Align.global_align(guide,amp_seq,matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
                         potential_guide = s1.strip("-")
                         if abs(len(potential_guide) - len(guide)) < 2: #if length of putative guide is off by less than 2, keep it (allows 1 gap)
                             loc = s1.find(potential_guide)
                             potential_ref = amp_seq[loc:loc+len(potential_guide)]
                             #realign to test for number of mismatches
                             ref_incentive = np.zeros(len(potential_ref)+1,dtype=np.int)
-                            sub_s1,sub_s2,sub_score=CRISPResso2Align.global_align(guide.encode("utf-8"),potential_ref,
-                                                                                  matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
+                            sub_s1,sub_s2,sub_score=CRISPResso2Align.global_align(guide,potential_ref,matrix=aln_matrix,gap_incentive=ref_incentive,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
                             mismatches = []
                             for i in range(len(sub_s1)):
                                 if sub_s1[i] != sub_s2[i]:
@@ -1678,16 +1669,11 @@ def main():
                 if not needs_cut_points and not needs_sgRNA_intervals and not needs_exon_positions and args.quantification_window_coordinates is None:
                     continue
 
-                print("test")
-                fws1, fws2, fwscore=CRISPResso2Align.global_align(
-                    refs[ref_name]['sequence'].encode("utf-8"),
-                    refs[clone_ref_name]['sequence'].encode("utf-8"),
-                    matrix=aln_matrix,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,gap_incentive=refs[clone_ref_name]['gap_incentive'])
-                print("test2")
+                fws1,fws2,fwscore=CRISPResso2Align.global_align(refs[ref_name]['sequence'], refs[clone_ref_name]['sequence'],matrix=aln_matrix,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,gap_incentive=refs[clone_ref_name]['gap_incentive'])
                 if fwscore < 60:
-                    print("fwscore < 60")
+                    print("fwscore < 60") # Nike
                     continue
-                print("fws1")
+                print("fws1") # Nike
                 print(fws1)
                 print("fws2")
                 print(fws2)
@@ -2572,7 +2558,7 @@ def main():
 
                 #align this variant to ref1 sequence
                 s1,s2,score = variantCache[variant]['ref_aln_details'][0]
-                payload=CRISPRessoCOREResources.find_indels_substitutions(s1.encode("utf-8"),s2.encode("utf-8"),refs[ref1_name]['include_idxs'])
+                payload=CRISPRessoCOREResources.find_indels_substitutions(s1,s2,refs[ref1_name]['include_idxs'])
 
                 #indels in this alignment against ref1 should be recorded for each ref it was originally assigned to, as well as for ref1
                 #for example, if this read aligned to ref3, align this read to ref1, and add the resulting indels to ref1_all_insertion_count_vectors[ref3] as well as ref1_all_insertion_count_vectors[ref1]

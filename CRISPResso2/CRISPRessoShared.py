@@ -274,19 +274,18 @@ nt_complement=dict({
     ord('-'):ord('-')})
 
 def reverse_complement(seq):
-    assert isinstance(seq, (bytes, bytearray))
-    return bytes([nt_complement[c] for c in seq[-1::-1]])
-
+    assert isinstance(seq, str)
+    return "".join([nt_complement[c] for c in seq.upper()[-1::-1]])
 def reverse(seq):
-    assert isinstance(seq, (bytes, bytearray))
-    return bytes([c for c in seq.upper()[-1::-1]])
+    assert isinstance(seq, str)
+    return "".join(c for c in seq.upper()[-1::-1])
 
 def find_wrong_nt(sequence):
     assert isinstance(sequence, str)
     return list(set(sequence.upper()).difference(set(['A','T','C','G','N'])))
 
 def capitalize_sequence(x):
-    return x.upper() if not pd.isnull(x) else x
+    return str(x).upper() if not pd.isnull(x) else x
 
 def slugify(value): #adapted from the Django project
 
