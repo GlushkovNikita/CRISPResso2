@@ -19,8 +19,8 @@ import subprocess as sb
 import sys
 import unicodedata
 
-from CRISPResso2 import CRISPResso2Align
 from CRISPResso2 import CRISPRessoCOREResources
+from CRISPResso2 import CRISPResso2Align
 
 running_python3 = False
 if sys.version_info > (3, 0):
