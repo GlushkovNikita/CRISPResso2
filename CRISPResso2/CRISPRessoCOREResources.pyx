@@ -3,6 +3,7 @@ import numpy as np
 cimport numpy as np
 import re
 
+
 cdef extern from "Python.h":
     ctypedef void PyObject
     PyObject *PyUnicode_FromString(const char *u)
@@ -12,10 +13,8 @@ re_find_indels=re.compile("(-*-)")
 @cython.boundscheck(False)
 @cython.nonecheck(False)
 @cython.wraparound(False)
-def find_indels_substitutions(_read_seq_al,_ref_seq_al,_include_indx):
+def find_indels_substitutions(str read_seq_al, str ref_seq_al, _include_indx):
 
-    cdef char* ref_seq_al = _ref_seq_al
-    cdef char* read_seq_al = _read_seq_al
     cdef char* sub_seq=''
 
     cdef int st
@@ -45,7 +44,7 @@ def find_indels_substitutions(_read_seq_al,_ref_seq_al,_include_indx):
 
             if c in nucSet:
                 ref_positions.append(idx)
-                if ref_seq_al[idx_c]!=read_seq_al[idx_c] and read_seq_al[idx_c]!='-' and read_seq_al[idx_c] != 'N':
+                if ref_seq_al[idx_c]!=read_seq_al[idx_c] and read_seq_al[idx_c]!=ord('-') and read_seq_al[idx_c] != ord('N'):
                     all_substitution_positions.append(idx)
                     all_substitution_values.append(read_seq_al[idx_c])
                     if idx in _include_indx:
@@ -85,9 +84,8 @@ def find_indels_substitutions(_read_seq_al,_ref_seq_al,_include_indx):
     insertion_coordinates = []
     insertion_sizes=[]
 
-    read_seq_al_str = PyUnicode_FromString(read_seq_al)
     include_indx_set = set(_include_indx)
-    for p in re_find_indels.finditer(<object>read_seq_al_str):
+    for p in re_find_indels.finditer(read_seq_al):
         st,en=p.span()
         ref_st = 0
         if st-1 > 0:
@@ -104,8 +102,7 @@ def find_indels_substitutions(_read_seq_al,_ref_seq_al,_include_indx):
 
     deletion_n = np.sum(deletion_sizes)
 
-    ref_seq_al_str = PyUnicode_FromString(ref_seq_al)
-    for p in re_find_indels.finditer(<object>ref_seq_al_str):
+    for p in re_find_indels.finditer(ref_seq_al):
         st,en=p.span()
         #sometimes deletions run off the end of the reference
         if en > idx: # if insertion happened after ref

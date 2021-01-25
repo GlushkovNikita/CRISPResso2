@@ -6,7 +6,6 @@ import numpy as np
 cimport numpy as np
 
 
-
 cimport cython
 import sys
 import os.path
@@ -24,6 +23,7 @@ cdef extern from "Python.h":
     char * PyBytes_AS_STRING(PyObject *)
     int PyUnicode_WriteChar(PyObject *unicode, Py_ssize_t index, Py_UCS4 character)
     Py_UCS4 PyUnicode_ReadChar(PyObject *unicode, Py_ssize_t index)
+
 
 ctypedef np.int_t DTYPE_INT
 ctypedef np.uint_t DTYPE_UINT
@@ -64,7 +64,7 @@ def read_matrix(path):
 
 @cython.boundscheck(False)
 @cython.nonecheck(False)
-def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
+def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
           np.ndarray[DTYPE_INT,ndim=1] gap_incentive, int gap_open=-1,
           int gap_extend=-1):
     """
@@ -78,8 +78,9 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
     """
 
-    cdef size_t max_j = strlen(seqj)
-    cdef size_t max_i = strlen(seqi)
+    cdef size_t max_j = len(seqj)
+    cdef size_t max_i = len(seqi)
+
     if len(gap_incentive) != max_i + 1:
         print('\nERROR: Mismatch in gap_incentive length (gap_incentive: ' + str(len(gap_incentive)) + ' ref: '+str(max_i+1) + '\n')
         return 0
@@ -145,6 +146,7 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
     cdef int mVal, iVal, jVal
 
     #apply NW algorithm for inside squares (not last row or column)
+
     for i in range(1, max_i):
         ci = seqi[i - 1] #char in i
 
@@ -194,6 +196,7 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
     #last column
     j = max_j
     cj = seqj[j-1]
+
     for i in range(1, max_i):
         ci = seqi[i-1]
 
@@ -305,11 +308,11 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
     cdef int matchCount = 0
 
-
     i = max_i
     j = max_j
     ci = seqi[i - 1]
     cj = seqj[j - 1]
+
     cdef int currMatrix
     currMatrix = MARRAY
     if mScore[i,j] > jScore[i,j]:
@@ -346,8 +349,10 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
             if cj == ci:
                  matchCount += 1
 
-            ci = seqi[i-1]
-            cj = seqj[j-1]
+            if i > 0:
+                ci = seqi[i-1]
+            if j > 0:
+                cj = seqj[j-1]
 
 #            print('in M set to ' + str(currMatrix))
           elif currMatrix == JARRAY:
@@ -355,13 +360,15 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
             i -= 1
             PyUnicode_WriteChar(aj, align_counter, c"-")
             PyUnicode_WriteChar(ai, align_counter, ci)
-            ci = seqi[i-1]
+            if i > 0:
+                ci = seqi[i-1]
           elif currMatrix == IARRAY:
             currMatrix = iPointer[i,j]
             j -= 1
             PyUnicode_WriteChar(aj, align_counter, cj)
             PyUnicode_WriteChar(ai, align_counter, c"-")
-            cj = seqj[j-1]
+            if j > 0:
+                cj = seqj[j-1]
           else:
             print('i: ' + str(i) + ' j: ' + str(j))
             print('currMatrix:' + str(currMatrix))
@@ -370,6 +377,7 @@ def global_align(char* seqj, char* seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 #          print('at end, currMatrix is ' + str(currMatrix))
 
         align_counter += 1
+
     aj = PyUnicode_Substring(aj, 0, align_counter)
     ai = PyUnicode_Substring(ai, 0, align_counter)
 

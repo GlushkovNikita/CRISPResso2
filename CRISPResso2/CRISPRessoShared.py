@@ -260,22 +260,23 @@ def propagate_crispresso_options(cmd,options,params):
 # Sequence functions
 #######
 nt_complement=dict({
-    ord('a'):ord('T'),
-    ord('c'):ord('G'),
-    ord('g'):ord('C'),
-    ord('t'):ord('A'),
-    ord('n'):ord('N'),
-    ord('A'):ord('T'),
-    ord('C'):ord('G'),
-    ord('G'):ord('C'),
-    ord('T'):ord('A'),
-    ord('N'):ord('N'),
-    ord('_'):ord('_'),
-    ord('-'):ord('-')})
+    'a':'T',
+    'c':'G',
+    'g':'C',
+    't':'A',
+    'n':'N',
+    'A':'T',
+    'C':'G',
+    'G':'C',
+    'T':'A',
+    'N':'N',
+    '_':'_',
+    '-':'-'})
 
 def reverse_complement(seq):
     assert isinstance(seq, str)
     return "".join([nt_complement[c] for c in seq.upper()[-1::-1]])
+
 def reverse(seq):
     assert isinstance(seq, str)
     return "".join(c for c in seq.upper()[-1::-1])
@@ -289,11 +290,11 @@ def capitalize_sequence(x):
 
 def slugify(value): #adapted from the Django project
 
-    value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '_', value).strip())
-    value = unicode(re.sub('[-\s]+', '-', value))
+    value = unicodedata.normalize('NFKD', str(value)).encode('ascii', 'ignore')
+    value = re.sub(b'[^\w\s-]', b'_', value).strip()
+    value = re.sub(b'[-\s]+', b'-', value)
 
-    return str(value)
+    return value.decode()
 
 
 ######
@@ -1022,7 +1023,7 @@ def get_crispresso_footer():
     logo_lines = logo.splitlines()
 
     max_logo_width = max([len(x) for x in logo_lines])
-    pad_space = (80 - (max_logo_width))/2 - 1
+    pad_space = int((80 - (max_logo_width))/2) - 1
     pad_string = " " * pad_space
 
     output_line = ""

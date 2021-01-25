@@ -262,7 +262,7 @@ def get_new_variant_object(args, fastq_seq, refs, ref_names, aln_matrix, pe_scaf
             s2 = fws2
             score = fwscore
         elif found_forward_count == 0 and found_reverse_count > args.aln_seed_min:
-            rvs1,rvs2,rvscore=CRISPResso2Align.global_align(CRISPRessoShared.reverse_complement(fastq_seq), refs[ref_name]['sequence'].encode("utf-8"),
+            rvs1,rvs2,rvscore=CRISPResso2Align.global_align(CRISPRessoShared.reverse_complement(fastq_seq), refs[ref_name]['sequence'],
                                                             matrix=aln_matrix,gap_incentive=refs[ref_name]['gap_incentive'],gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,)
             s1 = rvs1
             s2 = rvs2
@@ -448,15 +448,15 @@ def process_fastq(fastq_filename,variantCache,ref_names,refs,args):
     not_aln = {} #cache for reads that don't align
 
     if fastq_filename.endswith('.gz'):
-        fastq_handle=gzip.open(fastq_filename)
+        fastq_handle=gzip.open(fastq_filename, 'r')
     else:
-        fastq_handle=open(fastq_filename)
+        fastq_handle=open(fastq_filename, 'r')
 
     while(fastq_handle.readline()):
         #read through fastq in sets of 4
-        fastq_seq = fastq_handle.readline().strip()
-        fastq_plus = fastq_handle.readline()
-        fastq_qual = fastq_handle.readline()
+        fastq_seq = fastq_handle.readline().strip().decode("utf-8")
+        fastq_plus = fastq_handle.readline().decode("utf-8")
+        fastq_qual = fastq_handle.readline().decode("utf-8")
 
         if (N_TOT_READS % 10000 == 0):
             info("Processing reads; N_TOT_READS: %d N_COMPUTED_ALN: %d N_CACHED_ALN: %d N_COMPUTED_NOTALN: %d N_CACHED_NOTALN: %d"%(N_TOT_READS,N_COMPUTED_ALN,N_CACHED_ALN,N_COMPUTED_NOTALN,N_CACHED_NOTALN))
@@ -681,9 +681,9 @@ def process_fastq_write_out(fastq_input,fastq_output,variantCache,ref_names,refs
     fastq_id = fastq_input_handle.readline()
     while(fastq_id):
         #read through fastq in sets of 4
-        fastq_seq = fastq_input_handle.readline().strip()
-        fastq_plus = fastq_input_handle.readline().strip()
-        fastq_qual = fastq_input_handle.readline()
+        fastq_seq = fastq_input_handle.readline().strip().decode("utf-8")
+        fastq_plus = fastq_input_handle.readline().strip().decode("utf-8")
+        fastq_qual = fastq_input_handle.readline().decode("utf-8")
 
         if (N_TOT_READS % 10000 == 0):
             info("Processing reads; N_TOT_READS: %d N_COMPUTED_ALN: %d N_CACHED_ALN: %d N_COMPUTED_NOTALN: %d N_CACHED_NOTALN: %d"%(N_TOT_READS,N_COMPUTED_ALN,N_CACHED_ALN,N_COMPUTED_NOTALN,N_CACHED_NOTALN))
@@ -1668,7 +1668,6 @@ def main():
 
                 if not needs_cut_points and not needs_sgRNA_intervals and not needs_exon_positions and args.quantification_window_coordinates is None:
                     continue
-
                 fws1,fws2,fwscore=CRISPResso2Align.global_align(refs[ref_name]['sequence'], refs[clone_ref_name]['sequence'],matrix=aln_matrix,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,gap_incentive=refs[clone_ref_name]['gap_incentive'])
                 if fwscore < 60:
                     print("fwscore < 60") # Nike
@@ -2614,7 +2613,7 @@ def main():
         df_alleles['%Reads']=df_alleles['#Reads']/N_TOTAL*100
         df_alleles[['n_deleted','n_inserted','n_mutated']] = df_alleles[['n_deleted','n_inserted','n_mutated']].astype(int)
 
-        if np.sum(np.array(map(int,pd.__version__.split('.')))*(100,10,1))< 170:
+        if np.sum(np.fromiter(pd.__version__.split('.'), dtype=np.int) * (10000, 100, 1) ) < 1700:
            df_alleles.sort('#Reads',ascending=False,inplace=True)
         else:
            df_alleles.sort_values(by='#Reads',ascending=False,inplace=True)
@@ -2810,7 +2809,7 @@ def main():
 
         #write alleles table
         #crispresso1Cols = ["Aligned_Sequence","Reference_Sequence","NHEJ","UNMODIFIED","HDR","n_deleted","n_inserted","n_mutated","#Reads","%Reads"]
-        #df_alleles.ix[:,crispresso1Cols].to_csv(_jp('Alleles_frequency_table.txt'),sep='\t',header=True,index=None)
+        #df_alleles.loc[:,crispresso1Cols].to_csv(_jp('Alleles_frequency_table.txt'),sep='\t',header=True,index=None)
         #crispresso2Cols = ["Aligned_Sequence","Reference_Sequence","Reference_Name","Read_Status","n_deleted","n_inserted","n_mutated","#Reads","%Reads"]
 #        crispresso2Cols = ["Aligned_Sequence","Reference_Sequence","Reference_Name","Read_Status","n_deleted","n_inserted","n_mutated","#Reads","%Reads","Aligned_Reference_Names","Aligned_Reference_Scores"]
 #        crispresso2Cols = ["Read_Sequence","Amplicon_Sequence","Amplicon_Name","Read_Status","n_deleted","n_inserted","n_mutated","#Reads","%Reads"]
@@ -2825,7 +2824,7 @@ def main():
             if args.write_detailed_allele_table:
                 df_alleles.to_csv(allele_frequency_table_fileLoc,sep='\t',header=True,index=None)
             else:
-                df_alleles.ix[:,crispresso2Cols].to_csv(allele_frequency_table_fileLoc,sep='\t',header=True,index=None)
+                df_alleles.loc[:,crispresso2Cols].to_csv(allele_frequency_table_fileLoc,sep='\t',header=True,index=None)
         else:
             info('Writing file for alleles with dsODN')
             df_alleles["contains dsODN fw"] = df_alleles["Aligned_Sequence"].str.find(args.dsODN) > 0
@@ -2845,7 +2844,7 @@ def main():
             if args.write_detailed_allele_table:
                 df_alleles.to_csv(allele_frequency_table_fileLoc,sep='\t',header=True,index=None)
             else:
-                df_alleles.ix[:,dsODN_cols].to_csv(allele_frequency_table_fileLoc,sep='\t',header=True,index=None)
+                df_alleles.loc[:,dsODN_cols].to_csv(allele_frequency_table_fileLoc,sep='\t',header=True,index=None)
 
         with zipfile.ZipFile(allele_frequency_table_zip_filename,'w',zipfile.ZIP_DEFLATED, allowZip64=True) as myzip:
             myzip.write(allele_frequency_table_fileLoc,allele_frequency_table_filename)
@@ -3386,16 +3385,17 @@ def main():
                     crispresso2_info['refs'][ref_name]['sub_freq_table_filename'] = os.path.basename(sub_freq_table_filename)
 
                 if not args.suppress_plots:
-                    mod_pcts = []
+                    colnames = list(ref_seq)
                     tot = float(counts_total[ref_name])
-                    mod_pcts.append(np.concatenate((['Insertions'], np.array(all_insertion_count_vectors[ref_name]).astype(np.float)/tot)))
-                    mod_pcts.append(np.concatenate((['Insertions_Left'], np.array(all_insertion_left_count_vectors[ref_name]).astype(np.float)/tot)))
-                    mod_pcts.append(np.concatenate((['Deletions'], np.array(all_deletion_count_vectors[ref_name]).astype(np.float)/tot)))
-                    mod_pcts.append(np.concatenate((['Substitutions'], np.array(all_substitution_count_vectors[ref_name]).astype(np.float)/tot)))
-                    mod_pcts.append(np.concatenate((['All_modifications'], np.array(all_indelsub_count_vectors[ref_name]).astype(np.float)/tot)))
-                    mod_pcts.append(np.concatenate((['Total'],[counts_total[ref_name]]*refs[ref_name]['sequence_length'])))
-                    colnames = ['Modification']+list(ref_seq)
-                    modification_percentage_summary_df = pd.DataFrame(mod_pcts,columns=colnames)
+                    mod_pcts = []
+                    mod_pcts.append(np.array(all_insertion_count_vectors[ref_name]).astype(np.float)/tot)
+                    mod_pcts.append(np.array(all_insertion_left_count_vectors[ref_name]).astype(np.float)/tot)
+                    mod_pcts.append(np.array(all_deletion_count_vectors[ref_name]).astype(np.float)/tot)
+                    mod_pcts.append(np.array(all_substitution_count_vectors[ref_name]).astype(np.float)/tot)
+                    mod_pcts.append(np.array(all_indelsub_count_vectors[ref_name]).astype(np.float)/tot)
+                    mod_pcts.append([counts_total[ref_name]]*refs[ref_name]['sequence_length'])
+                    modification_percentage_summary_df = pd.DataFrame(mod_pcts, columns=colnames)
+                    modification_percentage_summary_df.insert(0,'Modification',['Insertions', 'Insertions_Left', 'Deletions', 'Substitutions', 'All_modifications', 'Total'])
 
                     nuc_df_for_plot = df_nuc_pct_all.reset_index().rename(columns={'index':'Nucleotide'})
                     nuc_df_for_plot.insert(0,'Batch',ref_name) #this function was designed for plottin batch... so just add a column in there to make it happy
@@ -4017,25 +4017,48 @@ def main():
 
                 if args.expected_hdr_amplicon_seq != "" and ref_name == ref_names[0]:
                     nuc_pcts = []
+                    nuc_pcts_col1 = []
+                    nuc_pcts_col2 = []
                     ref_names_for_hdr = [r for r in ref_names if counts_total[r] > 0]
                     for ref_name_for_hdr in ref_names_for_hdr:
                         tot = float(counts_total[ref_name_for_hdr])
                         for nuc in ['A','C','G','T','N','-']:
-                            nuc_pcts.append(np.concatenate(([ref_name_for_hdr,nuc], np.array(ref1_all_base_count_vectors[ref_name_for_hdr+"_"+nuc]).astype(np.float)/tot)))
-                    colnames = ['Batch','Nucleotide']+list(refs[ref_names[0]]['sequence'])
+                            nuc_pcts_col1.append(ref_name_for_hdr)
+                            nuc_pcts_col2.append(nuc)
+                            nuc_pcts.append(np.array(ref1_all_base_count_vectors[ref_name_for_hdr+"_"+nuc]).astype(np.float)/tot)
+                    colnames = list(refs[ref_names[0]]['sequence'])
                     hdr_nucleotide_percentage_summary_df = pd.DataFrame(nuc_pcts,columns=colnames)
+                    hdr_nucleotide_percentage_summary_df.insert(0,'Batch', nuc_pcts_col1)
+                    hdr_nucleotide_percentage_summary_df.insert(1,'Nucleotide', nuc_pcts_col2)
 
                     mod_pcts = []
+                    mod_pcts_col1 = []
+                    mod_pcts_col2 = []
                     for ref_name_for_hdr in ref_names_for_hdr:
                         tot = float(counts_total[ref_name_for_hdr])
-                        mod_pcts.append(np.concatenate(([ref_name_for_hdr,'Insertions'], np.array(ref1_all_insertion_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)))
-                        mod_pcts.append(np.concatenate(([ref_name_for_hdr,'Insertions_Left'], np.array(ref1_all_insertion_left_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)))
-                        mod_pcts.append(np.concatenate(([ref_name_for_hdr,'Deletions'], np.array(ref1_all_deletion_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)))
-                        mod_pcts.append(np.concatenate(([ref_name_for_hdr,'Substitutions'], np.array(ref1_all_substitution_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)))
-                        mod_pcts.append(np.concatenate(([ref_name_for_hdr,'All_modifications'], np.array(ref1_all_indelsub_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)))
-                        mod_pcts.append(np.concatenate(([ref_name_for_hdr,'Total'],[counts_total[ref_name_for_hdr]]*refs[ref_names_for_hdr[0]]['sequence_length'])))
-                    colnames = ['Batch','Modification']+list(refs[ref_names_for_hdr[0]]['sequence'])
+                        mod_pcts_col1.append(ref_name_for_hdr)
+                        mod_pcts_col2.append('Insertions')
+                        mod_pcts.append(np.array(ref1_all_insertion_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)
+                        mod_pcts_col1.append(ref_name_for_hdr)
+                        mod_pcts_col2.append('Insertions_Left')
+                        mod_pcts.append(np.array(ref1_all_insertion_left_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)
+                        mod_pcts_col1.append(ref_name_for_hdr)
+                        mod_pcts_col2.append('Deletions')
+                        mod_pcts.append(np.array(ref1_all_deletion_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)
+                        mod_pcts_col1.append(ref_name_for_hdr)
+                        mod_pcts_col2.append('Substitutions')
+                        mod_pcts.append(np.array(ref1_all_substitution_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)
+                        mod_pcts_col1.append(ref_name_for_hdr)
+                        mod_pcts_col2.append('All_modifications')
+                        mod_pcts.append(np.array(ref1_all_indelsub_count_vectors[ref_name_for_hdr]).astype(np.float)/tot)
+                        mod_pcts_col1.append(ref_name_for_hdr)
+                        mod_pcts_col2.append('Total')
+                        mod_pcts.append([counts_total[ref_name_for_hdr]]*refs[ref_names_for_hdr[0]]['sequence_length'])
+                    colnames = list(refs[ref_names_for_hdr[0]]['sequence'])
                     hdr_modification_percentage_summary_df = pd.DataFrame(mod_pcts,columns=colnames)
+                    hdr_modification_percentage_summary_df.insert(0,'Batch', mod_pcts_col1)
+                    hdr_modification_percentage_summary_df.insert(1,'Modification', mod_pcts_col2)
+
                     sgRNA_intervals = refs[ref_names_for_hdr[0]]['sgRNA_intervals']
                     sgRNA_names = refs[ref_names_for_hdr[0]]['sgRNA_names']
                     sgRNA_mismatches = refs[ref_names_for_hdr[0]]['sgRNA_mismatches']
@@ -4387,7 +4410,7 @@ def main():
 
                 ref_seq_around_cut=refs[ref_name]['sequence'][cut_point-plot_half_window+1:cut_point+plot_half_window+1]
                 fig_filename_root = _jp('9.'+ref_plot_name+'Alleles_frequency_table_around_'+sgRNA_label)
-                n_good = df_alleles_around_cut.ix[df_alleles_around_cut['%Reads']>=args.min_frequency_alleles_around_cut_to_plot].shape[0]
+                n_good = df_alleles_around_cut.loc[df_alleles_around_cut['%Reads']>=args.min_frequency_alleles_around_cut_to_plot].shape[0]
                 if not args.suppress_plots and n_good > 0:
 
                     df_to_plot = df_alleles_around_cut

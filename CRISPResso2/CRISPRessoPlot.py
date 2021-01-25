@@ -102,9 +102,9 @@ def plot_nucleotide_quilt(nuc_pct_df,mod_pct_df,fig_filename_root,save_also_png=
     amp_len = nuc_pct_df.shape[1] - 2 #Batch, Nucleotide, nuc1, nuc2, nuc3 ...
     nucs = nuc_pct_df.Nucleotide.unique()
     nNucs = len(nucs)
-    nSamples = nrows/nNucs
+    nSamples = int(nrows/nNucs)
     samplesList = []
-    for i in range(nSamples): #iterate over all samples
+    for i in range(int(nSamples)): #iterate over all samples
         sample_row_start = nNucs * i
         samplesList.append(nuc_pct_df.iloc[sample_row_start,0])
 
@@ -150,7 +150,7 @@ def plot_nucleotide_quilt(nuc_pct_df,mod_pct_df,fig_filename_root,save_also_png=
         for pos_ind in range(2,amp_len+2): #iterate over all nucleotide positions in the sequence (0=Batch, 1=Nucleotide, so start at 2)
             x_start = pos_ind
             x_end = pos_ind + 1
-            for i in range(nSamples): #iterate over all samples
+            for i in range(int(nSamples)): #iterate over all samples
                 sample_row_start = nNucs * i
                 y_start = nSamples - i
                 sumPct = 0
@@ -297,10 +297,10 @@ def plot_nucleotide_quilt(nuc_pct_df,mod_pct_df,fig_filename_root,save_also_png=
 #    else:
 #        fig.tight_layout()
 
-    fig.savefig(fig_filename_root+'.pdf')
-    fig.savefig(fig_filename_root+'.pdf',bbox_inches='tight')
+    #fig.savefig(fig_filename_root+'.pdf') Nike
+    #fig.savefig(fig_filename_root+'.pdf',bbox_inches='tight') Nike
     if save_also_png:
-        fig.savefig(fig_filename_root+'.png',bbox_inches='tight',pad=1)
+        fig.savefig(fig_filename_root+'.png',bbox_inches='tight')
     plt.close()
 
 def get_rows_for_sgRNA_annotation(sgRNA_intervals,amp_len):
@@ -434,9 +434,9 @@ def plot_conversion_map(nuc_pct_df,fig_filename_root,conversion_nuc_from,convers
     for i in range(nSamples):
         newRow = [nuc_pct_df.iloc[i*nNucs,0], from_nuc + ">" + to_nuc]
         sampleRows = nuc_pct_df.iloc[i*nNucs:i*nNucs+nNucs,:]
-        sub1 = sampleRows.ix[sampleRows['Nucleotide'] == to_nuc,2:amp_len+2]
-        sub2 = pd.DataFrame(sampleRows.ix[sampleRows['Nucleotide'].isin([from_nuc,to_nuc]),2:amp_len+2].sum(axis=0)).transpose()
-        #conversion_pcts = sampleRows.ix[sampleRows['Nucleotide'] == to_nuc,2:amp_len+2].div(sampleRows.ix[sampleRows['Nucleotide'].isin([from_nuc,to_nuc]),2:amp_len+2].sum(axis=0))
+        sub1 = sampleRows.loc[sampleRows['Nucleotide'] == to_nuc,2:amp_len+2]
+        sub2 = pd.DataFrame(sampleRows.loc[sampleRows['Nucleotide'].isin([from_nuc,to_nuc]),2:amp_len+2].sum(axis=0)).transpose()
+        #conversion_pcts = sampleRows.loc[sampleRows['Nucleotide'] == to_nuc,2:amp_len+2].div(sampleRows.loc[sampleRows['Nucleotide'].isin([from_nuc,to_nuc]),2:amp_len+2].sum(axis=0))
         conversion_pcts = sub1.div(sub2.values)
         newRow.extend(conversion_pcts.values.tolist()[0])
         nuc_pct_conversion.append(newRow)
@@ -1045,7 +1045,7 @@ def prep_alleles_table(df_alleles,reference_seq,MAX_N_ROWS,MIN_FREQUENCY):
 
     re_find_indels=re.compile("(-*-)")
     idx_row=0
-    for idx,row in df_alleles.ix[df_alleles['%Reads']>=MIN_FREQUENCY][:MAX_N_ROWS].iterrows():
+    for idx,row in df_alleles.loc[df_alleles['%Reads']>=MIN_FREQUENCY][:MAX_N_ROWS].iterrows():
         X.append(seq_to_numbers(str.upper(idx)))
         annot.append(list(idx))
 
@@ -1102,7 +1102,7 @@ def prep_alleles_table_compare(df_alleles,sample_name_1,sample_name_2,MAX_N_ROWS
 
     re_find_indels=re.compile("(-*-)")
     idx_row=0
-    for idx,row in df_alleles.ix[df_alleles['%Reads_'+sample_name_1] + df_alleles['%Reads_'+sample_name_2]>=MIN_FREQUENCY][:MAX_N_ROWS].iterrows():
+    for idx,row in df_alleles.loc[df_alleles['%Reads_'+sample_name_1] + df_alleles['%Reads_'+sample_name_2]>=MIN_FREQUENCY][:MAX_N_ROWS].iterrows():
         X.append(seq_to_numbers(str.upper(idx)))
         annot.append(list(idx))
         y_labels.append('%.2f%% (%d reads) %.2f%% (%d reads) ' % (row['%Reads_'+sample_name_1],row['#Reads_'+sample_name_1],
@@ -1180,7 +1180,7 @@ def plot_alleles_heatmap(reference_seq,fig_filename_root,X,annot,y_labels,insert
     ref_seq_hm=np.expand_dims(seq_to_numbers(reference_seq),1).T
     ref_seq_annot_hm=np.expand_dims(list(reference_seq),1).T
 
-    NEW_SEABORN=np.sum(np.array(map(int,sns.__version__.split('.')))*(100,10,1))>= 80
+    NEW_SEABORN=np.sum(np.fromiter(sns.__version__.split('.'), dtype=np.int) * (10000, 100, 1) ) >= 800
 
     if NEW_SEABORN:
         annot=annot[::-1]
@@ -1256,7 +1256,7 @@ def plot_alleles_heatmap(reference_seq,fig_filename_root,X,annot,y_labels,insert
 
 
     #create boxes for ins
-    for idx,lss in insertion_dict.iteritems():
+    for idx,lss in insertion_dict.items():
         for ls in lss:
             ax_hm.add_patch(patches.Rectangle((ls[0],N_ROWS-idx-1),ls[1]-ls[0],1,linewidth=3,edgecolor='r',fill=False))
 
