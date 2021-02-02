@@ -148,10 +148,10 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
     #apply NW algorithm for inside squares (not last row or column)
 
     for i in range(1, max_i):
-        ci = seqi[i - 1] #char in i
+        ci = ord(seqi[i - 1]) #char in i
 
         for j in range(1, max_j):
-            cj = seqj[j - 1] #char in j
+            cj = ord(seqj[j - 1]) #char in j
 
             iFromMVal = gap_open + mScore[i, j - 1] + gap_incentive[i]
             iExtendVal = gap_extend + iScore[i, j - 1] + gap_incentive[i]
@@ -195,10 +195,10 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
     #for last column and last row, ignore gap opening penalty
     #last column
     j = max_j
-    cj = seqj[j-1]
+    cj = ord(seqj[j-1])
 
     for i in range(1, max_i):
-        ci = seqi[i-1]
+        ci = ord(seqi[i-1])
 
         iFromMVal = gap_extend + mScore[i, j - 1] + gap_incentive[i]
         iExtendVal = gap_extend + iScore[i, j - 1] + gap_incentive[i]
@@ -239,9 +239,9 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
     #last row
     i = max_i
-    ci = seqi[i - 1]
+    ci = ord(seqi[i - 1])
     for j in range(1, max_j+1):
-        cj = seqj[j - 1]
+        cj = ord(seqj[j - 1])
 
         iFromMVal = gap_extend + mScore[i, j - 1] + gap_incentive[i]
         iExtendVal = gap_extend + iScore[i, j - 1] + gap_incentive[i]
@@ -310,8 +310,8 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
 
     i = max_i
     j = max_j
-    ci = seqi[i - 1]
-    cj = seqj[j - 1]
+    ci = ord(seqi[i - 1])
+    cj = ord(seqj[j - 1])
 
     cdef int currMatrix
     currMatrix = MARRAY
@@ -350,9 +350,9 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
                  matchCount += 1
 
             if i > 0:
-                ci = seqi[i-1]
+                ci = ord(seqi[i-1])
             if j > 0:
-                cj = seqj[j-1]
+                cj = ord(seqj[j-1])
 
 #            print('in M set to ' + str(currMatrix))
           elif currMatrix == JARRAY:
@@ -361,18 +361,18 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
             PyUnicode_WriteChar(aj, align_counter, c"-")
             PyUnicode_WriteChar(ai, align_counter, ci)
             if i > 0:
-                ci = seqi[i-1]
+                ci = ord(seqi[i-1])
           elif currMatrix == IARRAY:
             currMatrix = iPointer[i,j]
             j -= 1
             PyUnicode_WriteChar(aj, align_counter, cj)
             PyUnicode_WriteChar(ai, align_counter, c"-")
             if j > 0:
-                cj = seqj[j-1]
+                cj = ord(seqj[j-1])
           else:
             print('i: ' + str(i) + ' j: ' + str(j))
             print('currMatrix:' + str(currMatrix))
-            print('seqj: ' + str(seqj) + ' seqi: ' + str(seqi))
+            print('seqj: ' + str(seqj) + ' seqi: ' + seqi)
             raise Exception('wtf4!:pointer: %i', i)
 #          print('at end, currMatrix is ' + str(currMatrix))
 

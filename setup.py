@@ -74,6 +74,7 @@ def main():
           package_dir={'CRISPResso2' : 'CRISPResso2'},
           include_package_data = True,
           packages=['CRISPResso2'],
+          #console=[r'CRISPResso.py'],
           entry_points=entry_points,
           description="Software pipeline for the analysis of genome editing outcomes from deep sequencing data",
           classifiers=[
@@ -84,7 +85,7 @@ def main():
               'License :: Other/Proprietary License',
               'Operating System :: POSIX',
               'Topic :: Scientific/Engineering :: Bio-Informatics',
-              'Programming Language :: Python :: 2 :: Only',
+              'Programming Language :: Python :: 3 :: Only',
               'Programming Language :: Cython',
               ],
           #install_requires=[
