@@ -297,8 +297,8 @@ def plot_nucleotide_quilt(nuc_pct_df,mod_pct_df,fig_filename_root,save_also_png=
 #    else:
 #        fig.tight_layout()
 
-    #fig.savefig(fig_filename_root+'.pdf') Nike
-    #fig.savefig(fig_filename_root+'.pdf',bbox_inches='tight') Nike
+    fig.savefig(fig_filename_root+'.pdf')
+    fig.savefig(fig_filename_root+'.pdf',bbox_inches='tight')
     if save_also_png:
         fig.savefig(fig_filename_root+'.png',bbox_inches='tight')
     plt.close()

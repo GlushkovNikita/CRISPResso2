@@ -46,7 +46,7 @@ present = datetime.now()
 import logging
 #from test._mock_backport import inplace
 logging.basicConfig(level=logging.INFO,
-                     #format='%(levelname)-5s @ %(asctime)s:\n\t %(message)s \n',
+                     #format='%(levelname)-5s @ %(asctime)s:\n\t %(message)s \n', # Nike
                      format='%(message)s \n',
                      datefmt='%a, %d %b %Y %H:%M:%S',
                      stream=sys.stderr,
@@ -70,12 +70,12 @@ def check_library(library_name):
 
 def which(program):
     import os
-    if platform.system() == 'Windows' and program[:4] != ".exe":
+    if platform.system() == 'Windows' and program[:4] != ".exe": # Nike
         program = program + ".exe"
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    #fpath, fname = os.path.split(program)
+    #fpath, fname = os.path.split(program) # Nike
     #if fpath:
     if is_exe(program):
         return program
@@ -782,7 +782,7 @@ def main():
         if 'args' in vars() and 'debug' in args:
             debug_flag = args.debug
 
-        #if debug_flag:
+        #if debug_flag: # Nike, to simplify debugging
         traceback.print_exc(file=sys.stdout)
         error(traceback.format_exc())
 
@@ -1670,14 +1670,8 @@ def main():
                     continue
                 fws1,fws2,fwscore=CRISPResso2Align.global_align(refs[ref_name]['sequence'], refs[clone_ref_name]['sequence'],matrix=aln_matrix,gap_open=args.needleman_wunsch_gap_open,gap_extend=args.needleman_wunsch_gap_extend,gap_incentive=refs[clone_ref_name]['gap_incentive'])
                 if fwscore < 60:
-                    print("fwscore < 60") # Nike
                     continue
-                print("fws1") # Nike
-                print(fws1)
-                print("fws2")
-                print(fws2)
-                print("fwscore")
-                print(fwscore)
+
                 if (needs_sgRNA_intervals or needs_cut_points) and clone_has_cut_points and args.debug:
                     info("Reference '%s' has NO cut points or sgRNA intervals idxs defined. Inferring from '%s'."%(ref_name,clone_ref_name))
                 if needs_exon_positions and clone_has_exons and args.debug:
