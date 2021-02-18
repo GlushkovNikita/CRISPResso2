@@ -13,6 +13,7 @@ Software pipeline for the analysis of genome editing outcomes from deep sequenci
 
 from setuptools import setup, Extension
 from io import open
+import py2exe
 
 # Use build_ext from Cython if found
 command_classes = {}
