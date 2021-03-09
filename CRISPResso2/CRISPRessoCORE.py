@@ -1923,7 +1923,7 @@ def main():
                         args.fastq_r1,args.fastq_r2,output_forward_paired_filename,
                         output_forward_unpaired_filename,output_reverse_paired_filename,
                         output_reverse_unpaired_filename,args.trimmomatic_options_string,log_filename)
-                #print cmd
+                print(cmd)
                 try:
                     logging.getLogger().removeHandler(fileHandler)
                     fileHandler.close()
