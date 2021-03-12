@@ -4,7 +4,7 @@
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/crispresso2/README.html)
 
 # CRISPResso2
-CRISPResso2 is a software pipeline designed to enable rapid and intuitive interpretation of genome editing experiments. A limited web implementation is available at: http://crispresso2.pinellolab.org/.
+CRISPResso2 is a software pipeline designed to enable rapid and intuitive interpretation of genome editing experiments. A limited web implementation is available at: https://crispresso2.pinellolab.org/.
 
 Briefly, CRISPResso2:
 - aligns sequencing reads to a reference sequence
@@ -111,7 +111,7 @@ docker run -v ${PWD}:/DATA -w /DATA -i pinellolab/crispresso2 CRISPResso --fast
 ```
 
 ### Example run: Non-homologous end joining (NHEJ)
-Download the test datasets [nhej.r1.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/nhej.r1.fastq.gz) and [nhej.r2.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/nhej.r2.fastq.gz) to your current directory. This is the first 25,000 sequences from a paired-end sequencing experiment. To analyze this experiment, run the command:
+Download the test datasets [nhej.r1.fastq.gz](https://crispresso.pinellolab.partners.org/static/demo/nhej.r1.fastq.gz) and [nhej.r2.fastq.gz]( https://crispresso.pinellolab.partners.org/static/demo/nhej.r2.fastq.gz) to your current directory. This is the first 25,000 sequences from a paired-end sequencing experiment. To analyze this experiment, run the command:
 
 *Using Bioconda:*
 ```
@@ -123,10 +123,10 @@ CRISPResso --fastq_r1 nhej.r1.fastq.gz --fastq_r2 nhej.r2.fastq.gz --amplicon_se
 docker run -v ${PWD}:/DATA -w /DATA -i pinellolab/crispresso2 CRISPResso --fastq_r1 nhej.r1.fastq.gz --fastq_r2 nhej.r2.fastq.gz --amplicon_seq AATGTCCCCCAATGGGAAGTTCATCTGGCACTGCCCACAGGTGAGGAGGTCATGATCCCCTTCTGGAGCTCCCAACGGGCCGTGGTCTGGTTCATCATCTGTAAGAATGGCTTCAAGAGGCTCGGCTGTGGTT -n nhej
 ```
 
-This should produce a folder called 'CRISPResso_on_nhej'. Open the file called CRISPResso_on_nhej/CRISPResso2_report.html in a web browser, and you should see an output like this: [CRISPResso2_report.html](http://crispresso.pinellolab.partners.org/static/demo/CRISPResso_on_nhej/CRISPResso2_report.html).
+This should produce a folder called 'CRISPResso_on_nhej'. Open the file called CRISPResso_on_nhej/CRISPResso2_report.html in a web browser, and you should see an output like this: [CRISPResso2_report.html](https://crispresso.pinellolab.partners.org/static/demo/CRISPResso_on_nhej/CRISPResso2_report.html).
 
 ### Example run: Multiple alleles
-Download the test dataset [allele_specific.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/allele_specific.fastq.gz) to your current directory. This is the first 25,000 sequences from a editing experiment targeting one allele. To analyze this experiment, run the following command:
+Download the test dataset [allele_specific.fastq.gz]( https://crispresso.pinellolab.partners.org/static/demo/allele_specific.fastq.gz) to your current directory. This is the first 25,000 sequences from a editing experiment targeting one allele. To analyze this experiment, run the following command:
 
 *Using Bioconda:*
 ```
@@ -138,10 +138,10 @@ CRISPResso --fastq_r1 allele_specific.fastq.gz --amplicon_seq CGAGAGCCGCAGCCATGA
 docker run -v ${PWD}:/DATA -w /DATA -i pinellolab/crispresso2 CRISPResso --fastq_r1 allele_specific.fastq.gz --amplicon_seq CGAGAGCCGCAGCCATGAACGGCACAGAGGGCCCCAATTTTTATGTGCCCTTCTCCAACGTCACAGGCGTGGTGCGGAGCCACTTCGAGCAGCCGCAGTACTACCTGGCGGAACCATGGCAGTTCTCCATGCTGGCAGCGTACATGTTCCTGCTCATCGTGCTGGG,CGAGAGCCGCAGCCATGAACGGCACAGAGGGCCCCAATTTTTATGTGCCCTTCTCCAACGTCACAGGCGTGGTGCGGAGCCCCTTCGAGCAGCCGCAGTACTACCTGGCGGAACCATGGCAGTTCTCCATGCTGGCAGCGTACATGTTCCTGCTCATCGTGCTGGG --amplicon_name P23H,WT --guide_seq GTGCGGAGCCACTTCGAGCAGC
 ```
 
-This should produce a folder called 'CRISPResso_on_allele_specific'. Open the file called CRISPResso_on_allele_specific/CRISPResso2_report.html in a web browser, and you should see an output like this: [CRISPResso2_report.html](http://crispresso.pinellolab.partners.org/static/demo/CRISPResso_on_allele_specific/CRISPResso2_report.html).
+This should produce a folder called 'CRISPResso_on_allele_specific'. Open the file called CRISPResso_on_allele_specific/CRISPResso2_report.html in a web browser, and you should see an output like this: [CRISPResso2_report.html](https://crispresso.pinellolab.partners.org/static/demo/CRISPResso_on_allele_specific/CRISPResso2_report.html).
 
 ### Example run: Base editing experiment
-Download the test dataset [base_editor.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/base_editor.fastq.gz) to your current directory. This is the first 25,000 sequences from an editing experiment performed at the EMX1 locus. To analyze this experiment, run the following command:
+Download the test dataset [base_editor.fastq.gz]( https://crispresso.pinellolab.partners.org/static/demo/base_editor.fastq.gz) to your current directory. This is the first 25,000 sequences from an editing experiment performed at the EMX1 locus. To analyze this experiment, run the following command:
 
 *Using Bioconda:*
 ```
@@ -153,7 +153,7 @@ CRISPResso --fastq_r1 base_editor.fastq.gz --amplicon_seq GGCCCCAGTGGCTGCTCTGGGG
 docker run -v ${PWD}:/DATA -w /DATA -i pinellolab/crispresso2 CRISPResso --fastq_r1 base_editor.fastq.gz --amplicon_seq GGCCCCAGTGGCTGCTCTGGGGGCCTCCTGAGTTTCTCATCTGTGCCCCTCCCTCCCTGGCCCAGGTGAAGGTGTGGTTCCAGAACCGGAGGACAAAGTACAAACGGCAGAAGCTGGAGGAGGAAGGGCCTGAGTCCGAGCAGAAGAAGAAGGGCTCCCATCACATCAACCGGTGGCGCATTGCCACGAAGCAGGCCAATGGGGAGGACATCGATGTCACCTCCAATGACTAGGGTGG --guide_seq GAGTCCGAGCAGAAGAAGAA --quantification_window_size 10 --quantification_window_center -10 --base_editor_output
 ```
 
-This should produce a folder called 'CRISPResso_on_base_editor'. Open the file called CRISPResso_on_base_editor/CRISPResso2_report.html in a web browser, and you should see an output like this: [CRISPResso2_report.html](http://crispresso.pinellolab.partners.org/static/demo/CRISPResso_on_base_editor/CRISPResso2_report.html).
+This should produce a folder called 'CRISPResso_on_base_editor'. Open the file called CRISPResso_on_base_editor/CRISPResso2_report.html in a web browser, and you should see an output like this: [CRISPResso2_report.html](https://crispresso.pinellolab.partners.org/static/demo/CRISPResso_on_base_editor/CRISPResso2_report.html).
 
 ### Parameter list
 -h or --help: show a help message and exit.
@@ -440,7 +440,7 @@ For each amplicon, the following files are produced with the name of the amplico
 *MODIFICATION_FREQUENCY_SUMMARY.txt* and *MODIFICATION_PERCENTAGE_SUMMARY.txt* aggregate the modification frequency and percentage at each position in the amplicon for each sample.
 
 #### Example run: Batch mode
-Download the test dataset files [SRR3305543.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/SRR3305543.fastq.gz), [SRR3305544.fastq.gz](http://crispresso.pinellolab.partners.org/static/demo/SRR3305544.fastq.gz), [SRR3305545.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/SRR3305545.fastq.gz), and [SRR3305546.fastq.gz]( http://crispresso.pinellolab.partners.org/static/demo/SRR3305546.fastq.gz) to your current directory. These are files are the first 25,000 sequences from an editing experiment performed on several base editors. Also include a batch file that lists these files and the sample names: [batch.batch](http://crispresso.pinellolab.partners.org/static/demo/batch.batch) To analyze this experiment, run the following command:
+Download the test dataset files [SRR3305543.fastq.gz]( https://crispresso.pinellolab.partners.org/static/demo/SRR3305543.fastq.gz), [SRR3305544.fastq.gz](https://crispresso.pinellolab.partners.org/static/demo/SRR3305544.fastq.gz), [SRR3305545.fastq.gz]( https://crispresso.pinellolab.partners.org/static/demo/SRR3305545.fastq.gz), and [SRR3305546.fastq.gz]( https://crispresso.pinellolab.partners.org/static/demo/SRR3305546.fastq.gz) to your current directory. These are files are the first 25,000 sequences from an editing experiment performed on several base editors. Also include a batch file that lists these files and the sample names: [batch.batch](https://crispresso.pinellolab.partners.org/static/demo/batch.batch) To analyze this experiment, run the following command:
 
 *Using Bioconda:*
 ```
@@ -452,12 +452,11 @@ CRISPRessoBatch --batch_settings batch.batch --amplicon_seq CATTGCAGAGAGGCGTATCA
 docker run -v ${PWD}:/DATA -w /DATA -i pinellolab/crispresso2 CRISPRessoBatch --batch_settings batch.batch --amplicon_seq CATTGCAGAGAGGCGTATCATTTCGCGGATGTTCCAATCAGTACGCAGAGAGTCGCCGTCTCCAAGGTGAAAGCGGAAGTAGGGCCTTCGCGCACCTCATGGAATCCCTTCTGCAGCACCTGGATCGCTTTTCCGAGCTTCTGGCGGTCTCAAGCACTACCTACGTCAGCACCTGGGACCCC -p 4 --base_edit -g GGAATCCCTTCTGCAGCACC -wc -10 -w 20
 ```
 
-This should produce a folder called 'CRISPRessoBatch_on_batch'. Open the file called CRISPRessoBatch_on_batch/CRISPResso2Batch_report.html in a web browser, and you should see an output like this: [CRISPResso2Batch_report.html](http://crispresso.pinellolab.partners.org/static/demo/CRISPRessoBatch_on_batch/CRISPResso2Batch_report.html).
+This should produce a folder called 'CRISPRessoBatch_on_batch'. Open the file called CRISPRessoBatch_on_batch/CRISPResso2Batch_report.html in a web browser, and you should see an output like this: [CRISPResso2Batch_report.html](https://crispresso.pinellolab.partners.org/static/demo/CRISPRessoBatch_on_batch/CRISPResso2Batch_report.html).
 
 ### CRISPRessoPooled
 CRISPRessoPooled is a utility to analyze and quantify targeted sequencing CRISPR/Cas9 experiments involving sequencing libraries with pooled amplicons. One common experimental strategy is to pool multiple amplicons (e.g. a single on-target site plus a set of potential off-target sites) into a single deep sequencing reaction (briefly, genomic DNA samples for pooled applications can be prepared by first amplifying the target regions for each gene/target of interest with
-regions of 150-400bp depending on the desired coverage. In a second round of PCR, with minimized cycle numbers, barcode and adaptors are added. With optimization, these two rounds of PCR can be merged into a
-single reaction. These reactions are then quantified, normalized, pooled, and undergo quality control before being sequenced).
+regions of 150-400bp depending on the desired coverage. In a second round of PCR, with minimized cycle numbers, barcode and adaptors are added. With optimization, these two rounds of PCR can be merged into a single reaction. These reactions are then quantified, normalized, pooled, and undergo quality control before being sequenced).
 CRISPRessoPooled demultiplexes reads from multiple amplicons and runs the CRISPResso utility with appropriate reads for each amplicon separately.
 
 #### Usage
@@ -886,3 +885,47 @@ The output from these files will consist of:
 1.	COMPARISON_SAMPLES_QUANTIFICATION_SUMMARIES.txt: this file contains a summary of the quantification for each of the two conditions for each region and their difference (read counts and percentages for the various classes: Unmodified, NHEJ, MIXED NHEJ-HDR  and HDR).
 2.	A set of folders with CRISPRessoCompare reports on the common regions with enough reads in both conditions.
 3.	CRISPRessoPooledWGSCompare_RUNNING_LOG.txt: detailed execution log.
+
+### CRISPRessoAggregate
+
+CRISPRessoAggregate is a utility to combine the analysis of several CRISPResso runs. The are summarized and editing rates are optionally visualized in a summary report.
+
+#### Usage
+
+CRISPRessoAggregate has the following parameters:
+
+--name: Output name of the report (required)
+
+--prefix: Prefix for CRISPResso folders to aggregate (may be specified multiple times)
+
+--suffix: Suffix for CRISPResso folders to aggregate
+
+--min_reads_for_inclusion: Minimum number of reads for a run to be included in the run summary (default: 0)
+
+--place_report_in_output_folder: If true, report will be written inside the CRISPResso output folder. By default, the report will be written one directory up from the report output (default: False)
+
+--suppress_report: Suppress output report (default: False)
+
+--suppress_plots: Suppress output plots (default: False)
+
+To run CRISPRessoCompare you must provide the --name parameter, and CRISPResso folders in the current directory will be summarized. To summarize folders in other locations, provide these locations using the '--prefix' parameter.
+
+Example:
+
+*Using Bioconda:*
+```
+CRISPRessoAggregate --name "VEGFA" --prefix CRISPRessoRuns/VEGFA/
+```
+
+*Using Docker:*
+```
+docker run -v ${PWD}:/DATA -w /DATA -i pinellolab/crispresso2 CRISPRessoAggregate --name "VEGFA" --prefix CRISPRessoRuns/VEGFA/
+```
+
+The output will consist of:
+
+1.  CRISPResso2Aggregate_report.html: a html file containing links to all aggregated runs.
+2.  CRISPRessoAggregate_amplicon_information.txt: A tab-separated file with a line for each amplicon that was found in any run. The 'Amplicon Name' column shows the unique name for this amplicon sequence. 'Number of sources' shows how many runs the amplicon was found in, and 'Amplicon sources' show which run folders the amplicon was found in, as well as the name of the amplicon in that run.
+3.  CRISPRessoAggregate_mapping_statistics.txt: A tab-separated file showing the number of reads sequenced and mapped for each run.
+4.  CRISPRessoAggregate_quantification_of_editing_frequency.txt: A tab-separated with the number of reads and edits for each run folder. Data from run folders with multiple amplicons show the sum totals for all amplicons.
+5.  CRISPRessoAggregate_quantification_of_editing_frequency_by_amplicon.txt: A tab-separated file showing the number of reads and edits for each amplicon for each run folder. Data from run folders with multiple amplicons will appear on multiple lines, with one line per amplicon.
