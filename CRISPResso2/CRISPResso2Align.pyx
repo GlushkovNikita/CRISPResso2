@@ -345,7 +345,7 @@ def global_align(str seqj, str seqi, np.ndarray[DTYPE_INT, ndim=2] matrix,
             i -= 1
             j -= 1
             PyUnicode_WriteChar(aj, align_counter, cj)
-            PyUnicode_WriteChar(ai, align_counter, cj)
+            PyUnicode_WriteChar(ai, align_counter, ci)
             if cj == ci:
                  matchCount += 1
 

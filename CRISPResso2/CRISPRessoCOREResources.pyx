@@ -44,7 +44,7 @@ def find_indels_substitutions(str read_seq_al, str ref_seq_al, _include_indx):
 
             if c in nucSet:
                 ref_positions.append(idx)
-                if ref_seq_al[idx_c]!=read_seq_al[idx_c] and read_seq_al[idx_c]!=ord('-') and read_seq_al[idx_c] != ord('N'):
+                if ref_seq_al[idx_c]!=read_seq_al[idx_c] and read_seq_al[idx_c]!='-' and read_seq_al[idx_c] != 'N':
                     all_substitution_positions.append(idx)
                     all_substitution_values.append(read_seq_al[idx_c])
                     if idx in _include_indx:
@@ -142,14 +142,12 @@ def find_indels_substitutions(str read_seq_al, str ref_seq_al, _include_indx):
 @cython.boundscheck(False)
 @cython.nonecheck(False)
 @cython.wraparound(False)
-def find_indels_substitutions_legacy(_read_seq_al,_ref_seq_al,_include_indx):
+def find_indels_substitutions_legacy(str read_seq_al,str ref_seq_al,_include_indx):
     #this legacy function includes insertions if they border the quantification window
     #(e.g. if the quantification window is 1bp then insertions 1bp away from the predicted
     #cut site will be quantified). In the current version with a 1bp quantification window,
     #only insertions at the predicted cut site would be counted.
 
-    cdef char* ref_seq_al = _ref_seq_al
-    cdef char* read_seq_al = _read_seq_al
     cdef char* sub_seq=''
 
     cdef int st
